@@ -110,6 +110,58 @@ return value.replace(/[&<>"']/g,function(c){
 return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
 });
 }
-</script>
+async function searchJobs() {
+  const results = document.getElementById('results');
+  const keyword = document.getElementById('keyword').value.trim().toLowerCase();
+  const sector = document.getElementById('sector').value;
+  const city = document.getElementById('city').value;
+
+  results.innerHTML = '<p>نوکریاں تلاش ہو رہی ہیں، براہ کرم انتظار کریں...</p>';
+
+  try {
+    const response = await fetch(
+      'https://vmsigpjevwljjzxorwcm.supabase.co/rest/v1/jobs?select=*&verified=eq.true&published=eq.true&order=created_at.desc',
+      {
+        headers: {
+          'apikey': 'sb_publishable_zMf1quKorjkYdJo6yk2QyA_wSPkdm2U'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Jobs could not be loaded');
+    }
+
+    const jobs = await response.json();
+
+    const filtered = jobs.filter(job => {
+      const text = [
+        job.title, job.organization, job.location,
+        job.description, job.eligibility
+      ].join(' ').toLowerCase();
+
+      return (!keyword || text.includes(keyword)) &&
+        (!sector || job.job_type === sector) &&
+        (!city || (job.location || '').toLowerCase().includes(city.toLowerCase()));
+    });
+
+    results.innerHTML = filtered.length
+      ? filtered.map(job => `
+        <article style="border:1px solid #ddd;padding:14px;margin:12px 0;border-radius:8px">
+          <h3>${escapeText(job.title || '')}</h3>
+          <p><strong>ادارہ:</strong> ${escapeText(job.organization || '')}</p>
+          <p><strong>مقام:</strong> ${escapeText(job.location || '')}</p>
+          <p><strong>آخری تاریخ:</strong> ${escapeText(job.last_date || 'اشتہار دیکھیں')}</p>
+          <p>${escapeText(job.description || '')}</p>
+          <p><strong>اہلیت:</strong> ${escapeText(job.eligibility || '')}</p>
+          <a href="${escapeText(job.official_url || '#')}" target="_blank" rel="noopener noreferrer">اصل اشتہار دیکھیں</a>
+        </article>
+      `).join('')
+      : '<p>فی الحال آپ کی تلاش کے مطابق کوئی تصدیق شدہ نوکری موجود نہیں۔</p>';
+
+  } catch (error) {
+    results.innerHTML = '<p>نوکریاں لوڈ نہیں ہو سکیں۔ براہ کرم دوبارہ کوشش کریں۔</p>';
+  }
+  }</script>
 </body>
 </html>
