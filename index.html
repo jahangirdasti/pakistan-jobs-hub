@@ -1,53 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pakistan Jobs Hub</title>
-  <meta name="description" content="Find government and private jobs across Pakistan.">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f3f6f8; color: #183028; }
-    header { background: #075e45; color: white; padding: 28px 16px; text-align: center; }
-    header h1 { margin: 0 0 10px; }
-    main { max-width: 850px; margin: 24px auto; padding: 0 16px; }
-    .search, .card { background: white; padding: 18px; border-radius: 12px; margin-bottom: 16px; }
-    input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #bbb; border-radius: 8px; }
-    .tag { color: #075e45; font-weight: bold; }
-    footer { text-align: center; padding: 20px; color: #52615b; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pakistan Jobs Hub | Latest Jobs in Pakistan</title>
+<meta name="description" content="Explore government and private job opportunities across Pakistan. Find eligibility, deadlines and official application links.">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f6;color:#20352d}
+header{background:#075e45;color:white;padding:25px 16px;text-align:center}
+header h1{margin:0;font-size:30px}
+header p{margin:10px 0 0}
+nav{background:#064b39;padding:13px;text-align:center}
+nav a{color:white;text-decoration:none;margin:0 10px;font-size:14px}
+main{max-width:1000px;margin:24px auto;padding:0 15px}
+.hero{background:white;border-radius:14px;padding:25px 18px;text-align:center}
+.hero h2{color:#075e45;margin-top:0}
+.search{display:grid;gap:10px;margin-top:20px}
+input,select{width:100%;padding:13px;border:1px solid #ccd8d2;border-radius:8px;font-size:15px;background:white}
+button{padding:13px;background:#075e45;color:white;border:0;border-radius:8px;font-size:15px}
+.categories{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0}
+.category,.panel{background:white;padding:18px;border-radius:12px}
+.category strong{display:block;color:#075e45;margin-bottom:7px}
+h2.section-title{font-size:22px}
+.notice{background:#e8f4ee;border-left:4px solid #075e45;padding:15px;border-radius:6px;line-height:1.6}
+.job{background:white;padding:18px;border-radius:12px;margin:12px 0}
+.job h3{margin:0 0 10px;color:#075e45}
+.muted{color:#64746c;font-size:14px;line-height:1.6}
+footer{background:#123d30;color:white;text-align:center;padding:24px 15px;margin-top:35px;line-height:1.8}
+@media(min-width:650px){.search{grid-template-columns:2fr 1fr 1fr}.categories{grid-template-columns:repeat(4,1fr)}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Pakistan Jobs Hub</h1>
-    <p>Government & Private Jobs Across Pakistan</p>
-  </header>
-  <main>
-    <section class="search">
-      <h2>Find Your Next Job</h2>
-      <input id="search" type="search" placeholder="Search by job title or department..." oninput="filterJobs()">
-    </section>
-    <section id="jobs">
-      <article class="card">
-        <p class="tag">Welcome</p>
-        <h2>Latest Jobs in Pakistan</h2>
-        <p>We are building a place to find government and private job opportunities across Pakistan.</p>
-        <p>Each published job should include its source, eligibility, deadline, and official application link.</p>
-      </article>
-      <article class="card job">
-        <p class="tag">Government & Private</p>
-        <h2>Job listings coming soon</h2>
-        <p>Verified job advertisements will be added here with official source links.</p>
-      </article>
-    </section>
-  </main>
-  <footer>Pakistan Jobs Hub · Check official advertisements before applying.</footer>
-  <script>
-    function filterJobs() {
-      const query = document.getElementById('search').value.toLowerCase();
-      document.querySelectorAll('.job').forEach(job => {
-        job.style.display = job.innerText.toLowerCase().includes(query) ? '' : 'none';
-      });
-    }
-  </script>
+<header>
+<h1>Pakistan Jobs Hub</h1>
+<p>Your Guide to Government & Private Jobs in Pakistan</p>
+</header>
+<nav>
+<a href="#home">Home</a>
+<a href="#jobs">Latest Jobs</a>
+<a href="#categories">Categories</a>
+<a href="#about">About Us</a>
+</nav>
+<main id="home">
+<section class="hero">
+<h2>Find Your Next Career Opportunity</h2>
+<p>Explore job opportunities from across Pakistan in one place.</p>
+<div class="search">
+<input id="keyword" placeholder="Job title or department">
+<select id="sector">
+<option value="">All sectors</option>
+<option value="Government">Government</option>
+<option value="Private">Private</option>
+</select>
+<select id="city">
+<option value="">All cities</option>
+<option>Karachi</option><option>Lahore</option>
+<option>Islamabad</option><option>Hyderabad</option>
+<option>Peshawar</option><option>Quetta</option>
+<option>Multan</option><option>Other</option>
+</select>
+</div>
+<p><button onclick="searchJobs()">Search Jobs</button></p>
+</section>
+
+<section id="categories">
+<h2 class="section-title">Browse Job Categories</h2>
+<div class="categories">
+<div class="category"><strong>Government Jobs</strong><span class="muted">Federal and provincial vacancies</span></div>
+<div class="category"><strong>Private Jobs</strong><span class="muted">Companies and businesses</span></div>
+<div class="category"><strong>Healthcare Jobs</strong><span class="muted">Hospitals and medical services</span></div>
+<div class="category"><strong>Education Jobs</strong><span class="muted">Teaching and education</span></div>
+</div>
+</section>
+
+<section id="jobs">
+<h2 class="section-title">Latest Job Listings</h2>
+<div id="results" class="panel">
+<p><strong>No verified vacancies published yet.</strong></p>
+<p class="muted">New vacancies will appear here after their details and official application sources have been checked.</p>
+</div>
+</section>
+
+<section id="about" class="panel">
+<h2>About Pakistan Jobs Hub</h2>
+<p class="muted">Our goal is to make government and private job information easier to find for job seekers throughout Pakistan. Job listings should include eligibility, education, age limits, salary when announced, application deadlines and official application links.</p>
+<div class="notice">Always verify a vacancy through the recruiting organization's official website before applying. Never pay an unofficial person for a job.</div>
+</section>
+</main>
+<footer>
+<strong>Pakistan Jobs Hub</strong><br>
+Helping Pakistan Find Career Opportunities<br>
+<small>Vacancies must be verified with their original sources.</small>
+</footer>
+<script>
+function searchJobs(){
+const keyword=document.getElementById('keyword').value.trim();
+const sector=document.getElementById('sector').value;
+const city=document.getElementById('city').value;
+document.getElementById('results').innerHTML=
+'<p><strong>No verified vacancies published yet.</strong></p>'+
+'<p class="muted">Your search: '+escapeText(keyword||'All jobs')+
+' | Sector: '+escapeText(sector||'All')+
+' | City: '+escapeText(city||'All')+
+'. Listings will appear here once verified job data is added.</p>';
+}
+function escapeText(value){
+return value.replace(/[&<>"']/g,function(c){
+return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+});
+}
+</script>
 </body>
 </html>
