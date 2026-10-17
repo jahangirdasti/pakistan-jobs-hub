@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pakistan Jobs Hub</title>
+  <meta name="description" content="Find government and private jobs across Pakistan.">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f3f6f8; color: #183028; }
+    header { background: #075e45; color: white; padding: 28px 16px; text-align: center; }
+    header h1 { margin: 0 0 10px; }
+    main { max-width: 850px; margin: 24px auto; padding: 0 16px; }
+    .search, .card { background: white; padding: 18px; border-radius: 12px; margin-bottom: 16px; }
+    input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #bbb; border-radius: 8px; }
+    .tag { color: #075e45; font-weight: bold; }
+    footer { text-align: center; padding: 20px; color: #52615b; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pakistan Jobs Hub</h1>
+    <p>Government & Private Jobs Across Pakistan</p>
+  </header>
+  <main>
+    <section class="search">
+      <h2>Find Your Next Job</h2>
+      <input id="search" type="search" placeholder="Search by job title or department..." oninput="filterJobs()">
+    </section>
+    <section id="jobs">
+      <article class="card">
+        <p class="tag">Welcome</p>
+        <h2>Latest Jobs in Pakistan</h2>
+        <p>We are building a place to find government and private job opportunities across Pakistan.</p>
+        <p>Each published job should include its source, eligibility, deadline, and official application link.</p>
+      </article>
+      <article class="card job">
+        <p class="tag">Government & Private</p>
+        <h2>Job listings coming soon</h2>
+        <p>Verified job advertisements will be added here with official source links.</p>
+      </article>
+    </section>
+  </main>
+  <footer>Pakistan Jobs Hub · Check official advertisements before applying.</footer>
+  <script>
+    function filterJobs() {
+      const query = document.getElementById('search').value.toLowerCase();
+      document.querySelectorAll('.job').forEach(job => {
+        job.style.display = job.innerText.toLowerCase().includes(query) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
