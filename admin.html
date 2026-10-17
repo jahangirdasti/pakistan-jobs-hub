@@ -82,8 +82,16 @@
         return;
       }
 
-      message.textContent =
-        'Login successful. Admin access must be verified next.';
+      const { data: adminCheck, error: adminError } =
+  await supabase.rpc('is_admin');
+
+if (adminError || adminCheck !== true) {
+  await supabase.auth.signOut();
+  message.textContent = 'Login failed: Admin access not verified.';
+  return;
+}
+
+message.textContent = 'Admin verified successfully!';
     });
   </script>
 </body>
