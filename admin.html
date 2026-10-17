@@ -1,98 +1,313 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login | Pakistan Jobs Hub</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-    }
-    .login-box {
-      background: white;
-      width: calc(100% - 48px);
-      max-width: 380px;
-      padding: 24px;
-      border-radius: 14px;
-      box-shadow: 0 5px 25px #0001;
-    }
-    h2 { color: #14532d; }
-    input, button {
-      box-sizing: border-box;
-      width: 100%;
-      padding: 13px;
-      margin-top: 12px;
-      border-radius: 7px;
-      font-size: 16px;
-    }
-    input { border: 1px solid #cbd5e1; }
-    button {
-      border: 0;
-      background: #15803d;
-      color: white;
-      font-weight: bold;
-    }
-    #message { overflow-wrap: anywhere; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel | Pakistan Jobs Hub</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;color:#1e293b}
+header{background:#14532d;color:white;padding:18px}
+main{max-width:900px;margin:20px auto;padding:16px}
+.card{background:white;padding:18px;margin-bottom:18px;border-radius:12px;box-shadow:0 2px 10px #0001}
+input,textarea,select,button{box-sizing:border-box;width:100%;padding:12px;margin:7px 0;border:1px solid #cbd5e1;border-radius:7px;font-size:15px}
+textarea{min-height:90px}
+button{background:#15803d;color:white;border:0;font-weight:bold;cursor:pointer}
+.secondary{background:#475569}
+.danger{background:#b91c1c}
+.job{border:1px solid #cbd5e1;padding:12px;margin:12px 0;border-radius:8px;overflow-wrap:anywhere}
+.check{display:flex;gap:9px;align-items:center;margin:10px 0}
+.check input{width:auto}
+.hidden{display:none}
+#message{overflow-wrap:anywhere}
+</style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>Pakistan Jobs Hub</h2>
-    <p>Admin Login</p>
-
+<header>
+  <h2>Pakistan Jobs Hub</h2>
+  <p>Administrator Panel</p>
+</header>
+<main>
+  <section id="loginBox" class="card">
+    <h3>Admin Login</h3>
     <form id="loginForm">
-      <input id="email" type="email"
-        placeholder="Admin email address" required>
-      <input id="password" type="password"
-        placeholder="Password" required>
+      <input id="email" type="email" placeholder="Admin email" required>
+      <input id="password" type="password" placeholder="Password" required>
       <button type="submit">Login</button>
     </form>
+  </section>
 
-    <p id="message" role="status"></p>
-  </div>
+  <p id="message" role="status">Checking login...</p>
 
-  <script type="module">
-    import { createClient } from
-      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  <section id="dashboard" class="hidden">
+    <div class="card">
+      <h3 id="formTitle">Add a Job</h3>
+      <form id="jobForm">
+        <input id="jobId" type="hidden">
+        <label>Job Title *</label>
+        <input id="title" required>
+        <label>Organization *</label>
+        <input id="organization" required>
+        <label>Job Type</label>
+        <select id="job_type">
+          <option value="">Select type</option>
+          <option>Government</option>
+          <option>Private</option>
+          <option>Contract</option>
+          <option>Internship</option>
+        </select>
+        <label>Location</label>
+        <input id="location" placeholder="City or province">
+        <label>Last Date</label>
+        <input id="last_date" type="date">
+        <label>Official Advertisement URL *</label>
+        <input id="official_url" type="url" placeholder="https://..." required>
+        <label>Source Name</label>
+        <input id="source_name" placeholder="Official department website">
+        <label>Job Description</label>
+        <textarea id="description"></textarea>
+        <label>Eligibility</label>
+        <textarea id="eligibility"></textarea>
+        <label class="check">
+          <input id="verified" type="checkbox">
+          Official source and details verified
+        </label>
+        <label class="check">
+          <input id="published" type="checkbox">
+          Publish this job publicly
+        </label>
+        <button id="saveButton" type="submit">Save Job</button>
+        <button id="cancelButton" type="button" class="secondary hidden">Cancel Edit</button>
+      </form>
+    </div>
 
-    const supabase = createClient(
-      'https://vmsigpjevwljjzxorwcm.supabase.co',
-      'sb_publishable_zMf1quKorjkYdJo6yk2QyA_wSPkdm2U'
-    );
+    <div class="card">
+      <h3>Manage Jobs</h3>
+      <button id="refreshButton" class="secondary" type="button">Refresh Jobs</button>
+      <div id="jobsList">Loading jobs...</div>
+    </div>
+    <button id="logoutButton" class="danger" type="button">Logout</button>
+  </section>
+</main>
 
-    const form = document.getElementById('loginForm');
-    const message = document.getElementById('message');
+<script type="module">
+import { createClient } from
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      message.textContent = 'Signing in...';
+const supabase = createClient(
+  'https://vmsigpjevwljjzxorwcm.supabase.co',
+  'sb_publishable_zMf1quKorjkYdJo6yk2QyA_wSPkdm2U'
+);
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: document.getElementById('email').value.trim(),
-        password: document.getElementById('password').value
-      });
+const $ = id => document.getElementById(id);
+let currentUser = null;
 
-      if (error) {
-        message.textContent = 'Login failed: ' + error.message;
+function message(text) {
+  $('message').textContent = text;
+}
+
+function showDashboard(show) {
+  $('loginBox').classList.toggle('hidden', show);
+  $('dashboard').classList.toggle('hidden', !show);
+}
+
+async function verifyAdmin() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const session = sessionData.session;
+
+  if (!session) {
+    currentUser = null;
+    showDashboard(false);
+    message('Please log in with your admin account.');
+    return;
+  }
+
+  const { data, error } = await supabase.rpc('is_admin');
+
+  if (error || data !== true) {
+    await supabase.auth.signOut();
+    currentUser = null;
+    showDashboard(false);
+    message('Admin access not verified. Please check your admin setup.');
+    return;
+  }
+
+  currentUser = session.user;
+  showDashboard(true);
+  message('Admin verified. You can manage jobs.');
+  await loadJobs();
+}
+
+$('loginForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  message('Signing in...');
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: $('email').value.trim(),
+    password: $('password').value
+  });
+
+  if (error) {
+    message('Login failed: ' + error.message);
+    return;
+  }
+
+  await verifyAdmin();
+});
+
+function resetForm() {
+  $('jobForm').reset();
+  $('jobId').value = '';
+  $('formTitle').textContent = 'Add a Job';
+  $('saveButton').textContent = 'Save Job';
+  $('cancelButton').classList.add('hidden');
+}
+
+$('cancelButton').addEventListener('click', resetForm);
+
+$('jobForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  if (!currentUser) {
+    message('Please log in again.');
+    return;
+  }
+
+  const payload = {
+    title: $('title').value.trim(),
+    organization: $('organization').value.trim(),
+    job_type: $('job_type').value || null,
+    location: $('location').value.trim() || null,
+    last_date: $('last_date').value || null,
+    official_url: $('official_url').value.trim(),
+    source_name: $('source_name').value.trim() || null,
+    description: $('description').value.trim() || null,
+    eligibility: $('eligibility').value.trim() || null,
+    verified: $('verified').checked,
+    published: $('published').checked
+  };
+
+  message('Saving job...');
+
+  const id = $('jobId').value;
+  let result;
+
+  if (id) {
+    result = await supabase.from('jobs').update(payload).eq('id', id);
+  } else {
+    payload.created_by = currentUser.id;
+    result = await supabase.from('jobs').insert(payload);
+  }
+
+  if (result.error) {
+    message('Save failed: ' + result.error.message);
+    return;
+  }
+
+  message('Job saved successfully.');
+  resetForm();
+  await loadJobs();
+});
+
+function addText(parent, tag, text) {
+  const el = document.createElement(tag);
+  el.textContent = text || '';
+  parent.appendChild(el);
+  return el;
+}
+
+function makeButton(label, className, action) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = label;
+  if (className) button.className = className;
+  button.addEventListener('click', action);
+  return button;
+}
+
+async function loadJobs() {
+  if (!currentUser) return;
+
+  $('jobsList').textContent = 'Loading jobs...';
+
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    $('jobsList').textContent = 'Could not load jobs: ' + error.message;
+    return;
+  }
+
+  $('jobsList').replaceChildren();
+
+  if (!data.length) {
+    $('jobsList').textContent = 'No jobs added yet.';
+    return;
+  }
+
+  for (const job of data) {
+    const card = document.createElement('div');
+    card.className = 'job';
+
+    addText(card, 'h4', job.title);
+    addText(card, 'p', 'Organization: ' + job.organization);
+    addText(card, 'p', 'Location: ' + (job.location || 'Not specified'));
+    addText(card, 'p', 'Last date: ' + (job.last_date || 'Not specified'));
+    addText(card, 'p', 'Verified: ' + (job.verified ? 'Yes' : 'No'));
+    addText(card, 'p', 'Published: ' + (job.published ? 'Yes' : 'No'));
+    addText(card, 'p', job.official_url);
+
+    card.appendChild(makeButton('Edit', 'secondary', () => {
+      $('jobId').value = job.id;
+      $('title').value = job.title || '';
+      $('organization').value = job.organization || '';
+      $('job_type').value = job.job_type || '';
+      $('location').value = job.location || '';
+      $('last_date').value = job.last_date || '';
+      $('official_url').value = job.official_url || '';
+      $('source_name').value = job.source_name || '';
+      $('description').value = job.description || '';
+      $('eligibility').value = job.eligibility || '';
+      $('verified').checked = job.verified;
+      $('published').checked = job.published;
+      $('formTitle').textContent = 'Edit Job';
+      $('saveButton').textContent = 'Update Job';
+      $('cancelButton').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }));
+
+    card.appendChild(makeButton('Delete', 'danger', async () => {
+      if (!confirm('Delete this job permanently?')) return;
+
+      const { error: deleteError } = await supabase
+        .from('jobs').delete().eq('id', job.id);
+
+      if (deleteError) {
+        message('Delete failed: ' + deleteError.message);
         return;
       }
 
-      const { data: adminCheck, error: adminError } =
-  await supabase.rpc('is_admin');
+      message('Job deleted.');
+      await loadJobs();
+    }));
 
-if (adminError || adminCheck !== true) {
-  await supabase.auth.signOut();
-  message.textContent = 'Login failed: Admin access not verified.';
-  return;
+    $('jobsList').appendChild(card);
+  }
 }
 
-message.textContent = 'Admin verified successfully!';
-    });
-  </script>
+$('refreshButton').addEventListener('click', loadJobs);
+
+$('logoutButton').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  currentUser = null;
+  showDashboard(false);
+  resetForm();
+  message('You have logged out.');
+});
+
+await verifyAdmin();
+</script>
 </body>
 </html>
